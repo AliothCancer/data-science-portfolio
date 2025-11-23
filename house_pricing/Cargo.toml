@@ -1,0 +1,15 @@
+[package]
+name = "house_pricing"
+version = "0.1.0"
+edition = "2024"
+
+
+[dependencies]
+clap.workspace = true
+file_utility = { workspace = true } 
+plotlars = { workspace = true }
+polars = { workspace = true }
+scirs2 = { workspace = true }
+scirs2-io = { workspace = true }
+
+

@@ -1,0 +1,10 @@
+[package]
+name = "file_utility"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Note: workspace = true means "look at root Cargo.toml for version"
+clap = { workspace = true }
+csv.workspace = true
+polars = { workspace = true }

@@ -1,0 +1,32 @@
+# [package]
+# name = "rust_data_science_env"
+# version = "0.1.0"
+# edition = "2024"
+
+[workspace]
+resolver = "2"
+members = [
+    "file_utility",
+    "house_pricing",
+    # If the root 'src' folder is a crate, add "." here too, 
+    # but it is cleaner to keep the root code-free.
+]
+
+# ---------------------------------------------------------
+# CENTRALIZED DEPENDENCIES 
+# ---------------------------------------------------------
+[workspace.dependencies]
+# Internal crates
+file_utility = { path = "./file_utility" }
+
+# External crates
+clap = { version = "4.5.53", features = ["derive"] }
+plotlars = { version = "0.11.1" }
+polars = { version = "0.52.0", features = ["lazy", "csv", "dtype-full", "describe","timezones"] }
+scirs2 = { version = "0.1.0-rc.2",default-features=false, features = ["metrics","linalg", "stats", "special", "sparse", "optimize","cluster", "io","transform","series","graph","datasets"] }
+scirs2-io = "0.1.0-rc.2"
+csv = {version="1.4.0"}
+
+[profile.dev.package."*"]
+opt-level = 3
+
