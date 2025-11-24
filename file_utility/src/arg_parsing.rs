@@ -12,7 +12,7 @@ use std::{error::Error, fmt::Debug, fs::File, path::PathBuf};
 pub struct Cli {
     /// The CSV file containing the data
     #[arg(short = 'p', long = "data_path", value_name = "data path", value_parser=custom_csv_validator)]
-    data_path: PathBuf,
+    pub data_path: PathBuf,
 }
 
 #[derive(Debug)]
