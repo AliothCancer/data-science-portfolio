@@ -1055,6 +1055,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "csv-schema-validator"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6253a268b4971b33d6119214971e2187eb7848711382150bf2a9bf5031615a51"
+dependencies = [
+ "csv",
+ "csv-schema-validator-derive",
+ "once_cell",
+ "regex",
+ "serde",
+]
+
+[[package]]
+name = "csv-schema-validator-derive"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adb901133fa8853552add58ac2dfa5b236a1be2154761848c86cbb692c05cd5c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "darling"
 version = "0.20.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1719,6 +1743,7 @@ name = "house_pricing"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "csv-schema-validator",
  "file_utility",
  "plotlars",
  "polars",
@@ -2857,14 +2882,13 @@ dependencies = [
 
 [[package]]
 name = "plotlars"
-version = "0.11.1"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4a36f0fb17d2fd5055f5f8b4e97d16dcc36f441b6bfdd2297ea90c12cae57d1"
+checksum = "a6431c4dfc452ef2d35fb8041d1d3aecaaa24cedbd290fa5625852ca48a2c1c9"
 dependencies = [
  "bon",
  "image",
  "indexmap 2.12.1",
- "ndarray 0.17.1",
  "ordered-float",
  "plotly",
  "polars",

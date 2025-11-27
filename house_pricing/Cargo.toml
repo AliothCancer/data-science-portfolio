@@ -6,6 +6,7 @@ edition = "2024"
 
 [dependencies]
 clap.workspace = true
+csv-schema-validator.workspace = true
 file_utility = { workspace = true } 
 plotlars = { workspace = true }
 polars = { workspace = true }

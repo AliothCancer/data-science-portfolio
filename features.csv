@@ -1,0 +1,47 @@
+name,desc,type
+MSSubClass,Codice del tipo di abitazione.,Nominale
+MSZoning,Classificazione della zonizzazione.,Nominale
+Street,Tipo di accesso stradale.,Nominale
+Alley,Tipo di accesso al vicolo.,Nominale
+LotShape,Forma generale della proprietà.,Nominale
+LandContour,Livellamento della proprietà.,Nominale
+Utilities,Tipo di utenze disponibili.,Nominale
+LotConfig,Configurazione del lotto.,Nominale
+Neighborhood,Posizione fisica (quartiere).,Nominale
+Condition1,Prossimità a condizioni.,Nominale
+Condition2,Prossimità a condizioni secondarie.,Nominale
+BldgType,Tipo di abitazione.,Nominale
+HouseStyle,Stile dell'abitazione.,Nominale
+RoofStyle,Tipo di tetto.,Nominale
+RoofMatl,Materiale del tetto.,Nominale
+Exterior1st,Rivestimento esterno principale.,Nominale
+Exterior2nd,Rivestimento esterno secondario.,Nominale
+MasVnrType,Tipo di impiallacciatura in muratura.,Nominale
+Foundation,Tipo di fondazione.,Nominale
+Heating,Tipo di riscaldamento.,Nominale
+CentralAir,Aria condizionata centralizzata (Y/N).,Nominale
+Electrical,Sistema elettrico.,Nominale
+GarageType,Posizione del garage.,Nominale
+PavedDrive,Vialetto asfaltato.,Nominale
+MiscFeature,Caratteristica aggiuntiva.,Nominale
+SaleType,Tipo di vendita.,Nominale
+SaleCondition,Condizione di vendita.,Nominale
+LandSlope,Pendenza della proprietà.,Ordinale
+OverallQual,Qualità generale (1-10).,Ordinale
+OverallCond,Condizione generale (1-10).,Ordinale
+ExterQual,Qualità del materiale esterno.,Ordinale
+ExterCond,Condizione del materiale esterno.,Ordinale
+BsmtQual,Qualità (altezza) del seminterrato.,Ordinale
+BsmtCond,Condizione generale del seminterrato.,Ordinale
+BsmtExposure,Esposizione del seminterrato.,Ordinale
+BsmtFinType1,Classificazione area finita 1.,Ordinale
+BsmtFinType2,Classificazione area finita 2.,Ordinale
+HeatingQC,Qualità e condizione del riscaldamento.,Ordinale
+KitchenQual,Qualità della cucina.,Ordinale
+Functional,Funzionalità dell'abitazione.,Ordinale
+FireplaceQu,Qualità del caminetto.,Ordinale
+GarageFinish,Finitura interna del garage.,Ordinale
+GarageQual,Qualità del garage.,Ordinale
+GarageCond,Condizione del garage.,Ordinale
+PoolQC,Qualità della piscina.,Ordinale
+Fence,Qualità della recinzione.,Ordinale
