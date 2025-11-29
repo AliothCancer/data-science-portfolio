@@ -8,6 +8,7 @@ edition = "2024"
 clap.workspace = true
 csv-schema-validator.workspace = true
 file_utility = { workspace = true } 
+itertools.workspace = true
 plotlars = { workspace = true }
 polars = { workspace = true }
 scirs2 = { workspace = true }

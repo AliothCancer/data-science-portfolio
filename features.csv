@@ -1,47 +1,80 @@
-name,desc,type
-MSSubClass,Codice del tipo di abitazione.,Nominale
-MSZoning,Classificazione della zonizzazione.,Nominale
-Street,Tipo di accesso stradale.,Nominale
-Alley,Tipo di accesso al vicolo.,Nominale
-LotShape,Forma generale della proprietà.,Nominale
-LandContour,Livellamento della proprietà.,Nominale
-Utilities,Tipo di utenze disponibili.,Nominale
-LotConfig,Configurazione del lotto.,Nominale
-Neighborhood,Posizione fisica (quartiere).,Nominale
-Condition1,Prossimità a condizioni.,Nominale
-Condition2,Prossimità a condizioni secondarie.,Nominale
-BldgType,Tipo di abitazione.,Nominale
-HouseStyle,Stile dell'abitazione.,Nominale
-RoofStyle,Tipo di tetto.,Nominale
-RoofMatl,Materiale del tetto.,Nominale
-Exterior1st,Rivestimento esterno principale.,Nominale
-Exterior2nd,Rivestimento esterno secondario.,Nominale
-MasVnrType,Tipo di impiallacciatura in muratura.,Nominale
-Foundation,Tipo di fondazione.,Nominale
-Heating,Tipo di riscaldamento.,Nominale
-CentralAir,Aria condizionata centralizzata (Y/N).,Nominale
-Electrical,Sistema elettrico.,Nominale
-GarageType,Posizione del garage.,Nominale
-PavedDrive,Vialetto asfaltato.,Nominale
-MiscFeature,Caratteristica aggiuntiva.,Nominale
-SaleType,Tipo di vendita.,Nominale
-SaleCondition,Condizione di vendita.,Nominale
-LandSlope,Pendenza della proprietà.,Ordinale
-OverallQual,Qualità generale (1-10).,Ordinale
-OverallCond,Condizione generale (1-10).,Ordinale
-ExterQual,Qualità del materiale esterno.,Ordinale
-ExterCond,Condizione del materiale esterno.,Ordinale
-BsmtQual,Qualità (altezza) del seminterrato.,Ordinale
-BsmtCond,Condizione generale del seminterrato.,Ordinale
-BsmtExposure,Esposizione del seminterrato.,Ordinale
-BsmtFinType1,Classificazione area finita 1.,Ordinale
-BsmtFinType2,Classificazione area finita 2.,Ordinale
-HeatingQC,Qualità e condizione del riscaldamento.,Ordinale
-KitchenQual,Qualità della cucina.,Ordinale
-Functional,Funzionalità dell'abitazione.,Ordinale
-FireplaceQu,Qualità del caminetto.,Ordinale
-GarageFinish,Finitura interna del garage.,Ordinale
-GarageQual,Qualità del garage.,Ordinale
-GarageCond,Condizione del garage.,Ordinale
-PoolQC,Qualità della piscina.,Ordinale
-Fence,Qualità della recinzione.,Ordinale
+name,dtype,str_type,description
+LotFrontage,float,N/A,Fronte strada lineare (piedi).
+MasVnrArea,float,N/A,Area dell'impiallacciatura in muratura (piedi quadrati).
+MSSubClass,int,N/A,Codice del tipo di abitazione.
+LotArea,int,N/A,Dimensioni del lotto (piedi quadrati).
+OverallQual,int,Ordinale,Valutazione generale della qualità (1-10).
+OverallCond,int,Ordinale,Valutazione generale delle condizioni (1-10).
+YearBuilt,int,N/A,Anno di costruzione originale.
+YearRemodAdd,int,N/A,Anno di ristrutturazione.
+BsmtFinSF1,int,N/A,Area finita del seminterrato Tipo 1 (piedi quadrati).
+BsmtFinSF2,int,N/A,Area finita del seminterrato Tipo 2 (piedi quadrati).
+BsmtUnfSF,int,N/A,Area non finita del seminterrato (piedi quadrati).
+TotalBsmtSF,int,N/A,Area totale del seminterrato (piedi quadrati).
+1stFlrSF,int,N/A,Area del primo piano (piedi quadrati).
+2ndFlrSF,int,N/A,Area del secondo piano (piedi quadrati).
+LowQualFinSF,int,N/A,Area finita di bassa qualità (piedi quadrati).
+GrLivArea,int,N/A,Area abitabile fuori terra (piedi quadrati).
+BsmtFullBath,int,N/A,Bagni completi nel seminterrato (conteggio).
+BsmtHalfBath,int,N/A,Mezzi bagni nel seminterrato (conteggio).
+FullBath,int,N/A,Bagni completi fuori terra (conteggio).
+HalfBath,int,N/A,Mezzi bagni fuori terra (conteggio).
+Bedroom,int,N/A,Camere da letto (conteggio).
+Kitchen,int,N/A,Cucine (conteggio).
+TotRmsAbvGrd,int,N/A,Stanze totali fuori terra (conteggio).
+Fireplaces,int,N/A,Numero di caminetti (conteggio).
+GarageYrBlt,int,N/A,Anno di costruzione del garage.
+GarageCars,int,N/A,Capacità del garage (numero di auto).
+GarageArea,int,N/A,Area del garage (piedi quadrati).
+WoodDeckSF,int,N/A,Area del ponte in legno (piedi quadrati).
+OpenPorchSF,int,N/A,Area del portico aperto (piedi quadrati).
+EnclosedPorch,int,N/A,Area del portico chiuso (piedi quadrati).
+3SsnPorch,int,N/A,Area del portico a tre stagioni (piedi quadrati).
+ScreenPorch,int,N/A,Area del portico schermato (piedi quadrati).
+PoolArea,int,N/A,Area della piscina (piedi quadrati).
+MiscVal,int,N/A,Valore delle caratteristiche aggiuntive (dollari).
+MoSold,int,N/A,Mese di vendita.
+YrSold,int,N/A,Anno di vendita.
+MSZoning,str,Nominale,Classificazione della zonizzazione.
+Street,str,Nominale,Tipo di accesso stradale.
+Alley,str,Nominale,Tipo di accesso al vicolo.
+LotShape,str,Nominale,Forma generale della proprietà.
+LandContour,str,Nominale,Livellamento della proprietà.
+Utilities,str,Nominale,Tipo di utenze disponibili.
+LotConfig,str,Nominale,Configurazione del lotto.
+LandSlope,str,Ordinale,"Pendenza della proprietà (Gentle, Moderate, Severe)."
+Neighborhood,str,Nominale,Posizione fisica (quartiere).
+Condition1,str,Nominale,Prossimità a condizioni.
+Condition2,str,Nominale,Prossimità a condizioni secondarie.
+BldgType,str,Nominale,Tipo di abitazione.
+HouseStyle,str,Nominale,Stile dell'abitazione.
+RoofStyle,str,Nominale,Tipo di tetto.
+RoofMatl,str,Nominale,Materiale del tetto.
+Exterior1st,str,Nominale,Rivestimento esterno principale.
+Exterior2nd,str,Nominale,Rivestimento esterno secondario.
+MasVnrType,str,Nominale,Tipo di impiallacciatura in muratura.
+ExterQual,str,Ordinale,"Qualità del materiale esterno (Ex, Gd, TA, Fa, Po)."
+ExterCond,str,Ordinale,"Condizione del materiale esterno (Ex, Gd, TA, Fa, Po)."
+Foundation,str,Nominale,Tipo di fondazione.
+BsmtQual,str,Ordinale,Qualità (altezza) del seminterrato.
+BsmtCond,str,Ordinale,Condizione generale del seminterrato.
+BsmtExposure,str,Ordinale,"Esposizione del seminterrato (Gd, Av, Mn, No)."
+BsmtFinType1,str,Ordinale,Classificazione area finita 1.
+BsmtFinType2,str,Ordinale,Classificazione area finita 2.
+Heating,str,Nominale,Tipo di riscaldamento.
+HeatingQC,str,Ordinale,Qualità e condizione del riscaldamento.
+CentralAir,str,Nominale,Aria condizionata centralizzata (Y/N).
+Electrical,str,Nominale,Sistema elettrico.
+KitchenQual,str,Ordinale,Qualità della cucina.
+Functional,str,Ordinale,"Funzionalità dell'abitazione (Typ, Min, Mod, etc.)."
+FireplaceQu,str,Ordinale,Qualità del caminetto.
+GarageType,str,Nominale,Posizione del garage.
+GarageFinish,str,Ordinale,Finitura interna del garage.
+GarageQual,str,Ordinale,Qualità del garage.
+GarageCond,str,Ordinale,Condizione del garage.
+PavedDrive,str,Nominale,Vialetto asfaltato.
+PoolQC,str,Ordinale,Qualità della piscina.
+Fence,str,Ordinale,Qualità della recinzione.
+MiscFeature,str,Nominale,Caratteristica aggiuntiva.
+SaleType,str,Nominale,Tipo di vendita.
+SaleCondition,str,Nominale,Condizione di vendita.
