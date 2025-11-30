@@ -1742,12 +1742,14 @@ dependencies = [
 name = "house_pricing"
 version = "0.1.0"
 dependencies = [
+ "arrayvec",
  "clap",
  "csv-schema-validator",
  "file_utility",
  "itertools 0.14.0",
  "plotlars",
  "polars",
+ "rayon",
  "scirs2",
  "scirs2-io",
 ]
@@ -3199,6 +3201,7 @@ dependencies = [
  "bitflags",
  "chrono",
  "either",
+ "futures",
  "memchr",
  "polars-arrow",
  "polars-compute",
@@ -3212,6 +3215,7 @@ dependencies = [
  "polars-time",
  "polars-utils",
  "rayon",
+ "tokio",
  "version_check",
 ]
 
@@ -3221,6 +3225,7 @@ version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f6e455ceb6e5aee7ed7d5c8944104e66992173e03a9c42f9670226318672249"
 dependencies = [
+ "futures",
  "memmap2",
  "polars-arrow",
  "polars-core",
@@ -3233,6 +3238,7 @@ dependencies = [
  "polars-utils",
  "rayon",
  "recursive",
+ "tokio",
 ]
 
 [[package]]
@@ -3313,6 +3319,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "either",
+ "futures",
  "hashbrown 0.16.1",
  "memmap2",
  "num-traits",

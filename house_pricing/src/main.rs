@@ -6,9 +6,9 @@ use std::{error::Error, path::PathBuf, time::Instant};
 
 use clap::Parser;
 use file_utility::{self, arg_parsing::Cli};
-use plotlars::{HeatMap, Palette, Plot, Text};
+// use plotlars::{HeatMap, Palette, Plot, Text};
 use polars::prelude::*;
-use scirs2::{datasets::utils::Array2, series::gpu_acceleration::ndarray::Axis, stats::corrcoef};
+use scirs2::{datasets::utils::Array2, stats::corrcoef};
 
 /*
 Todo:
@@ -35,14 +35,27 @@ fn main() -> Result<(), Box<dyn Error>> {
         feature_desc_path,
     } = Cli::parse();
 
+    let k = LazyCsvReader::new(PlPath::new("https://plot4.ai/downloads?csv"))
+        .finish()?
+        .collect()?
+    ;
+    dbg!(k);
     let dataset = Dataset::try_new(data_path, feature_desc_path)?;
     let numeric_data_owned = dataset.numerical_features.clone().collect()?;
+    let numeric_data_owned_clone = numeric_data_owned.clone();
+    let start = Instant::now();
+    println!("{}", corr(numeric_data_owned_clone));
+    let delta_time = start.elapsed();
+    println!("polars corr: {} ms", delta_time.as_millis());
 
     let start = Instant::now();
-    println!("{}",corr(numeric_data_owned));
+    println!(
+        "{}",
+        heatmap(numeric_data_owned, dataset.numerical_features)?
+    );
     let delta_time = start.elapsed();
-    
-    println!("{} ms", delta_time.as_millis());
+
+    println!("scirs corr: {} ms", delta_time.as_millis());
     Ok(())
 }
 
@@ -79,12 +92,14 @@ fn read_and_return_df(path: PathBuf) -> Result<LazyFrame, PolarsError> {
         .finish()
 }
 
-fn heatmap(numeric_data_owned: DataFrame, numeric_data: LazyFrame) -> Result<(), Box<dyn Error>> {
-    let numeric_data: Array2<f64> = numeric_data_owned.to_ndarray::<Float64Type>(IndexOrder::C)?;
-
+fn heatmap(
+    numeric_data_owned: DataFrame,
+    numeric_data: LazyFrame,
+) -> Result<DataFrame, Box<dyn Error>> {
+    let numeric_data: Array2<f32> = numeric_data_owned.to_ndarray::<Float32Type>(IndexOrder::C)?;
     let mut x: Vec<u64> = Vec::new();
     let mut y: Vec<u64> = Vec::new();
-    let mut z: Vec<f64> = Vec::new();
+    let mut z: Vec<f32> = Vec::new();
 
     for (row_index, row) in corrcoef(&numeric_data, "pearson")?
         .rows()
@@ -103,34 +118,35 @@ fn heatmap(numeric_data_owned: DataFrame, numeric_data: LazyFrame) -> Result<(),
         Series::new("z".into(), z).into(),
     ])?;
 
-    HeatMap::builder()
-        .data(&corr_mat)
-        .x("x")
-        .y("y")
-        .z("z")
-        .plot_title(Text::from("Heat Map").font("Arial").size(18))
-        .color_scale(Palette::Viridis)
-        .build()
-        .plot();
-    Ok(())
+    // HeatMap::builder()
+    //     .data(&corr_mat)
+    //     .x("x")
+    //     .y("y")
+    //     .z("z")
+    //     .plot_title(Text::from("Heat Map").font("Arial").size(18))
+    //     .color_scale(Palette::Cividis)
+    //     .build()
+    //     .plot();
+    Ok(corr_mat)
 }
 
-fn corr(df: DataFrame) -> DataFrame{
-    let col_names: Vec<&str> = df.get_column_names_str();
+fn corr(df: DataFrame) -> DataFrame {
+    let col_names= df.get_column_names_str();
     let col_names_len = col_names.len();
-
+    let mut x: Vec<u32> = Vec::new();
+    let mut y: Vec<u32> = Vec::new();
+    let mut z: Vec<f32> = Vec::new();
     // Genereting all the correlation expressions
     // between every pair combination
-    let corr_df_exprs = col_names
-        .iter()
+    let corr_df_exprs = col_names.iter()
         .flat_map(|col_ax1| {
             col_names.iter().map(move |col_ax2| {
                 pearson_corr(col(*col_ax1), col(*col_ax2))
-                    .alias(format!("{}{}", col_ax1, col_ax2))
+                        .alias(format!("{}{}", col_ax1, col_ax2))
             })
         })
+        // .dedup()
         .collect::<Vec<Expr>>();
-
     // convert to ndarray::Array2, needs ndarray feature
     let tmp: Array2<f32> = df
         .clone()
@@ -149,15 +165,21 @@ fn corr(df: DataFrame) -> DataFrame{
         .unwrap();
 
     // Iter over the Axis and build the series
-    
-    corr_matrix
-        .axis_iter(Axis(0))
-        .zip(col_names.iter())
-        .map(|(row, name)| Series::new(PlSmallStr::from(*name), row.to_vec()))
-        .chain([&col_names].map(|names|{
-            Series::new(PlSmallStr::from("column_name"), names)
-        }))
-        .collect::<DataFrame>()
+
+    for (row_index, row) in corr_matrix.rows().into_iter().enumerate() {
+        for (col_index, col_cell) in row.into_iter().enumerate() {
+            x.push(col_index as u32);
+            y.push(row_index as u32);
+            z.push(*col_cell);
+        }
+    }
+
+    DataFrame::new(vec![
+        Series::new("x".into(), x).into(),
+        Series::new("y".into(), y).into(),
+        Series::new("z".into(), z).into(),
+    ])
+    .unwrap()
 }
 
 // fn take_corr(name: &str, paired_names:){
@@ -172,7 +194,6 @@ fn corr(df: DataFrame) -> DataFrame{
 //     }).collect_vec();
 // }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -185,7 +206,8 @@ mod tests {
             "a" => &[1.0, 2.0, 3.0, 4.0, 5.0],
             "b" => &[2.0, 4.0, 6.0, 8.0, 10.0],   // 2x (Perfect Positive)
             "c" => &[-1.0, -2.0, -3.0, -4.0, -5.0] // -1x (Perfect Negative)
-        ).expect("Failed to create DF");
+        )
+        .expect("Failed to create DF");
 
         let result = corr(df);
 
@@ -202,7 +224,7 @@ mod tests {
 
         // 3. Check Correlation Values (Column "a" vs others)
         let col_a = result.column("a").unwrap().f32().unwrap();
-        
+
         // Corr(a, a) should be 1.0
         assert!((col_a.get(0).unwrap() - 1.0).abs() < 1e-6);
         // Corr(a, b) should be 1.0
@@ -217,14 +239,15 @@ mod tests {
         let df = df!(
             "x" => &[1.0, 0.0, -1.0],
             "y" => &[0.0, 1.0, 0.0]
-        ).unwrap();
+        )
+        .unwrap();
 
         let result = corr(df);
-        
+
         // Extract correlation between x and y
         // Column "x", row 1 (which corresponds to "y")
         let val = result.column("x").unwrap().f32().unwrap().get(1).unwrap();
-        
+
         // Should be 0.0 (or very close to it)
         assert!(val.abs() < 1e-6);
     }
@@ -234,9 +257,9 @@ mod tests {
         // Test ensuring the extra column is always last
         let df = df!("val1" => &[1.0, 2.0], "val2" => &[3.0, 4.0]).unwrap();
         let result = corr(df);
-        
+
         let column_names = result.get_column_names();
-        
+
         // Based on your chain logic, "column_name" should be the last one added
         assert_eq!(column_names.last(), Some(&&PlSmallStr::from("column_name")));
     }
