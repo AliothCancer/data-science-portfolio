@@ -1,6 +1,5 @@
 #![allow(unused_variables, dead_code)]
 
-mod custom_pipeline;
 
 use std::{error::Error, path::PathBuf, time::Instant};
 
@@ -24,10 +23,6 @@ Todo:
     - .. -> Sobel indexes
 */
 
-struct TupleSet<'a> {
-    col_ax1: &'a str,
-    col_ax2: &'a str,
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let Cli {
@@ -35,12 +30,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         feature_desc_path,
     } = Cli::parse();
 
-    let k = LazyCsvReader::new(PlPath::new("https://plot4.ai/downloads?csv"))
-        .finish()?
-        .collect()?
-    ;
-    dbg!(k);
-    let dataset = Dataset::try_new(data_path, feature_desc_path)?;
+
+    let dataset = Dataset::try_new(data_path, feature_desc_path.unwrap())?;
     let numeric_data_owned = dataset.numerical_features.clone().collect()?;
     let numeric_data_owned_clone = numeric_data_owned.clone();
     let start = Instant::now();

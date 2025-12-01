@@ -14,7 +14,7 @@ pub struct Cli {
     #[arg(short = 'p', long = "data_path", value_name = "data path", value_parser=custom_csv_path_validator)]
     pub data_path: PathBuf,
     #[arg(short = 'f', long = "feature_path", value_name = "feature description", value_parser=custom_csv_path_validator)]
-    pub feature_desc_path: PathBuf,
+    pub feature_desc_path: Option<PathBuf>,
 }
 
 #[derive(Debug)]

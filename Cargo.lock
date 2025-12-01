@@ -1577,6 +1577,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "generate_types_from_csv"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "file_utility",
+ "itertools 0.14.0",
+ "polars",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
