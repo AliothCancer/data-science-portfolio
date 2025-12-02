@@ -1,95 +1,88 @@
 #![allow(unused)]
 
-struct MSZoning([&'static str;5]);
-const MSZONING: MSZoning = MSZoning(["RH","FV","RM","RL","C (all)",]);
+enum MSZoning{CSpaceOpenParenallCloseParen,}
 
-enum Street{Grvl,Pave,}
+enum Street{Pave,Grvl,}
 
 enum Alley{Pave,Grvl,}
 
-enum LotShape{Reg,IR1,IR3,IR2,}
+enum LotShape{IR3,IR2,Reg,IR1,}
 
-enum LandContour{Lvl,Low,HLS,Bnk,}
+enum LandContour{Low,Lvl,Bnk,Hls,}
 
 enum Utilities{AllPub,NoSeWa,}
 
-enum LotConfig{CulDSac,Corner,Inside,FR3,FR2,}
+enum LotConfig{FR3,CulDSac,FR2,Corner,Inside,}
 
 enum LandSlope{Sev,Mod,Gtl,}
 
-enum Neighborhood{NPkVill,SawyerW,Somerst,OldTown,NoRidge,Mitchel,BrDale,Blueste,MeadowV,Timber,Sawyer,IDOTRR,Blmngtn,BrkSide,ClearCr,SWISU,NAmes,NridgHt,NWAmes,CollgCr,Crawfor,StoneBr,Gilbert,Edwards,Veenker,}
+enum Neighborhood{CollgCr,Sawyer,BrDale,Crawfor,Gilbert,NoRidge,Idotrr,NWAmes,Veenker,ClearCr,NPkVill,StoneBr,NAmes,Swisu,Timber,BrkSide,SawyerW,MeadowV,NridgHt,Edwards,Blueste,OldTown,Somerst,Mitchel,Blmngtn,}
 
-enum Condition1{Artery,RRAn,RRAe,RRNn,Feedr,PosN,PosA,RRNe,Norm,}
+enum Condition1{RRNe,Artery,PosA,Feedr,RRNn,Norm,RRAn,RRAe,PosN,}
 
-enum Condition2{RRAe,RRNn,Norm,PosA,Feedr,PosN,RRAn,Artery,}
+enum Condition2{RRNn,Artery,RRAn,PosN,Norm,Feedr,RRAe,PosA,}
 
-struct BldgType([&'static str;5]);
-const BLDGTYPE: BldgType = BldgType(["Twnhs","Duplex","1Fam","2fmCon","TwnhsE",]);
+enum BldgType{OneFam,TwofmCon,}
 
-struct HouseStyle([&'static str;8]);
-const HOUSESTYLE: HouseStyle = HouseStyle(["1Story","2.5Fin","2Story","SLvl","1.5Unf","2.5Unf","SFoyer","1.5Fin",]);
+enum HouseStyle{TwoStory,TwoPointFiveFin,OnePointFiveUnf,TwoPointFiveUnf,OneStory,OnePointFiveFin,}
 
-enum RoofStyle{Hip,Gable,Flat,Shed,Mansard,Gambrel,}
+enum RoofStyle{Shed,Flat,Gambrel,Mansard,Gable,Hip,}
 
-struct RoofMatl([&'static str;8]);
-const ROOFMATL: RoofMatl = RoofMatl(["WdShngl","Roll","CompShg","Tar&Grv","WdShake","ClyTile","Metal","Membran",]);
+enum RoofMatl{TarAndGrv,}
 
-struct Exterior1st([&'static str;15]);
-const EXTERIOR1ST: Exterior1st = Exterior1st(["CemntBd","AsphShn","VinylSd","Plywood","CBlock","WdShing","HdBoard","BrkFace","ImStucc","Stucco","Stone","BrkComm","Wd Sdng","MetalSd","AsbShng",]);
+enum Exterior1st{WdSpaceSdng,}
 
-struct Exterior2nd([&'static str;16]);
-const EXTERIOR2ND: Exterior2nd = Exterior2nd(["ImStucc","Wd Sdng","MetalSd","Plywood","AsbShng","Stucco","CmentBd","AsphShn","Brk Cmn","Other","Wd Shng","BrkFace","Stone","CBlock","HdBoard","VinylSd",]);
+enum Exterior2nd{WdSpaceShng,WdSpaceSdng,BrkSpaceCmn,}
 
-enum MasVnrType{None,Stone,BrkFace,BrkCmn,}
+enum MasVnrType{Stone,None,BrkFace,BrkCmn,}
 
-enum ExterQual{Fa,TA,Gd,Ex,}
+enum ExterQual{Ex,Gd,Fa,TA,}
 
-enum ExterCond{Fa,Gd,TA,Ex,Po,}
+enum ExterCond{Gd,Fa,Po,Ex,TA,}
 
-enum Foundation{Slab,BrkTil,CBlock,PConc,Wood,Stone,}
+enum Foundation{Wood,Slab,PConc,BrkTil,CBlock,Stone,}
 
-enum BsmtQual{Ex,TA,Fa,Gd,}
+enum BsmtQual{Gd,Fa,Ex,TA,}
 
-enum BsmtCond{Po,Gd,TA,Fa,}
+enum BsmtCond{Gd,Fa,Po,TA,}
 
-enum BsmtExposure{Mn,No,Gd,Av,}
+enum BsmtExposure{No,Gd,Mn,Av,}
 
-enum BsmtFinType1{BLQ,Unf,Rec,LwQ,GLQ,ALQ,}
+enum BsmtFinType1{Unf,Glq,BLQ,Rec,ALQ,LwQ,}
 
-enum BsmtFinType2{BLQ,GLQ,Unf,ALQ,LwQ,Rec,}
+enum BsmtFinType2{Rec,LwQ,ALQ,BLQ,GLQ,Unf,}
 
-enum Heating{GasA,Floor,Grav,GasW,Wall,OthW,}
+enum Heating{Grav,GasA,Wall,GasW,Floor,OthW,}
 
-enum HeatingQC{Po,Fa,Gd,TA,Ex,}
+enum HeatingQC{TA,Po,Fa,Ex,Gd,}
 
-enum CentralAir{N,Y,}
+enum CentralAir{Y,N,}
 
-enum Electrical{FuseF,SBrkr,FuseP,Mix,FuseA,}
+enum Electrical{FuseA,FuseF,Mix,SBrkr,FuseP,}
 
-enum KitchenQual{TA,Ex,Gd,Fa,}
+enum KitchenQual{TA,Ex,Fa,Gd,}
 
-enum Functional{Sev,Min1,Mod,Min2,Maj1,Typ,Maj2,}
+enum Functional{Sev,Min1,Min2,Maj2,Typ,Mod,Maj1,}
 
-enum FireplaceQu{Fa,Po,Gd,Ex,TA,}
+enum FireplaceQu{Fa,TA,Ex,Po,Gd,}
 
-struct GarageType([&'static str;6]);
-const GARAGETYPE: GarageType = GarageType(["CarPort","Detchd","Basment","2Types","BuiltIn","Attchd",]);
+enum GarageType{TwoTypes,}
 
 enum GarageFinish{RFn,Unf,Fin,}
 
-enum GarageQual{Gd,Ex,Po,TA,Fa,}
+enum GarageQual{Gd,Fa,TA,Po,Ex,}
 
-enum GarageCond{Gd,Ex,Po,TA,Fa,}
+enum GarageCond{Ex,TA,Gd,Po,Fa,}
 
-enum PavedDrive{Y,N,P,}
+enum PavedDrive{Y,P,N,}
 
 enum PoolQC{Fa,Ex,Gd,}
 
-enum Fence{GdWo,GdPrv,MnPrv,MnWw,}
+enum Fence{MnPrv,GdWo,GdPrv,MnWw,}
 
-enum MiscFeature{Shed,TenC,Othr,Gar2,}
+enum MiscFeature{Shed,Gar2,Othr,TenC,}
 
-enum SaleType{CWD,Con,ConLD,ConLI,COD,Oth,ConLw,WD,New,}
+enum SaleType{ConLI,Con,COD,Oth,New,CWD,ConLw,WD,ConLD,}
 
-enum SaleCondition{Abnorml,Normal,Family,Alloca,Partial,AdjLand,}
+enum SaleCondition{Partial,AdjLand,Family,Abnorml,Alloca,Normal,}
 
