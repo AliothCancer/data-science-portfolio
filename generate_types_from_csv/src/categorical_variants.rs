@@ -2,87 +2,87 @@
 
 enum MSZoning{CSpaceOpenParenallCloseParen,}
 
-enum Street{Pave,Grvl,}
+enum Street{Grvl,Pave,}
 
-enum Alley{Pave,Grvl,}
+enum Alley{Grvl,Pave,}
 
-enum LotShape{IR3,IR2,Reg,IR1,}
+enum LotShape{IR2,IR3,IR1,Reg,}
 
-enum LandContour{Low,Lvl,Bnk,Hls,}
+enum LandContour{Bnk,Low,HLS,Lvl,}
 
-enum Utilities{AllPub,NoSeWa,}
+enum Utilities{NoSeWa,AllPub,}
 
-enum LotConfig{FR3,CulDSac,FR2,Corner,Inside,}
+enum LotConfig{FR2,Corner,Inside,CulDSac,FR3,}
 
-enum LandSlope{Sev,Mod,Gtl,}
+enum LandSlope{Gtl,Mod,Sev,}
 
-enum Neighborhood{CollgCr,Sawyer,BrDale,Crawfor,Gilbert,NoRidge,Idotrr,NWAmes,Veenker,ClearCr,NPkVill,StoneBr,NAmes,Swisu,Timber,BrkSide,SawyerW,MeadowV,NridgHt,Edwards,Blueste,OldTown,Somerst,Mitchel,Blmngtn,}
+enum Neighborhood{NPkVill,NAmes,SawyerW,Somerst,MeadowV,NWAmes,IDOTRR,Mitchel,Timber,CollgCr,ClearCr,Gilbert,Edwards,Veenker,BrkSide,Blueste,Crawfor,OldTown,NridgHt,SWISU,StoneBr,Blmngtn,BrDale,NoRidge,Sawyer,}
 
-enum Condition1{RRNe,Artery,PosA,Feedr,RRNn,Norm,RRAn,RRAe,PosN,}
+enum Condition1{Feedr,RRAe,RRNn,RRNe,PosA,Norm,RRAn,Artery,PosN,}
 
-enum Condition2{RRNn,Artery,RRAn,PosN,Norm,Feedr,RRAe,PosA,}
+enum Condition2{RRNn,Artery,RRAe,RRAn,PosA,Feedr,PosN,Norm,}
 
 enum BldgType{OneFam,TwofmCon,}
 
-enum HouseStyle{TwoStory,TwoPointFiveFin,OnePointFiveUnf,TwoPointFiveUnf,OneStory,OnePointFiveFin,}
+enum HouseStyle{TwoPointFiveUnf,TwoStory,OneStory,OnePointFiveFin,OnePointFiveUnf,TwoPointFiveFin,}
 
-enum RoofStyle{Shed,Flat,Gambrel,Mansard,Gable,Hip,}
+enum RoofStyle{Flat,Gable,Hip,Mansard,Gambrel,Shed,}
 
 enum RoofMatl{TarAndGrv,}
 
 enum Exterior1st{WdSpaceSdng,}
 
-enum Exterior2nd{WdSpaceShng,WdSpaceSdng,BrkSpaceCmn,}
+enum Exterior2nd{WdSpaceSdng,WdSpaceShng,BrkSpaceCmn,}
 
-enum MasVnrType{Stone,None,BrkFace,BrkCmn,}
+enum MasVnrType{None,Stone,BrkCmn,BrkFace,}
 
-enum ExterQual{Ex,Gd,Fa,TA,}
+enum ExterQual{Ex,Fa,TA,Gd,}
 
-enum ExterCond{Gd,Fa,Po,Ex,TA,}
+enum ExterCond{Ex,TA,Gd,Po,Fa,}
 
-enum Foundation{Wood,Slab,PConc,BrkTil,CBlock,Stone,}
+enum Foundation{Stone,BrkTil,CBlock,PConc,Slab,Wood,}
 
-enum BsmtQual{Gd,Fa,Ex,TA,}
+enum BsmtQual{TA,Gd,Fa,Ex,}
 
-enum BsmtCond{Gd,Fa,Po,TA,}
+enum BsmtCond{Fa,TA,Po,Gd,}
 
-enum BsmtExposure{No,Gd,Mn,Av,}
+enum BsmtExposure{Mn,No,Av,Gd,}
 
-enum BsmtFinType1{Unf,Glq,BLQ,Rec,ALQ,LwQ,}
+enum BsmtFinType1{ALQ,GLQ,Rec,BLQ,Unf,LwQ,}
 
-enum BsmtFinType2{Rec,LwQ,ALQ,BLQ,GLQ,Unf,}
+enum BsmtFinType2{ALQ,GLQ,Unf,Rec,LwQ,BLQ,}
 
-enum Heating{Grav,GasA,Wall,GasW,Floor,OthW,}
+enum Heating{GasA,Wall,OthW,Floor,GasW,Grav,}
 
-enum HeatingQC{TA,Po,Fa,Ex,Gd,}
+enum HeatingQC{Ex,Fa,TA,Po,Gd,}
 
-enum CentralAir{Y,N,}
+enum CentralAir{N,Y,}
 
-enum Electrical{FuseA,FuseF,Mix,SBrkr,FuseP,}
+enum Electrical{Mix,FuseP,FuseA,FuseF,SBrkr,}
 
-enum KitchenQual{TA,Ex,Fa,Gd,}
+enum KitchenQual{Fa,TA,Ex,Gd,}
 
-enum Functional{Sev,Min1,Min2,Maj2,Typ,Mod,Maj1,}
+enum Functional{Sev,Mod,Min1,Maj1,Maj2,Min2,Typ,}
 
-enum FireplaceQu{Fa,TA,Ex,Po,Gd,}
+enum FireplaceQu{TA,Gd,Po,Ex,Fa,}
 
 enum GarageType{TwoTypes,}
 
-enum GarageFinish{RFn,Unf,Fin,}
+enum GarageFinish{Unf,RFn,Fin,}
 
-enum GarageQual{Gd,Fa,TA,Po,Ex,}
+enum GarageQual{Gd,Po,Ex,Fa,TA,}
 
-enum GarageCond{Ex,TA,Gd,Po,Fa,}
+enum GarageCond{TA,Po,Ex,Fa,Gd,}
 
 enum PavedDrive{Y,P,N,}
 
-enum PoolQC{Fa,Ex,Gd,}
+enum PoolQC{Fa,Gd,Ex,}
 
-enum Fence{MnPrv,GdWo,GdPrv,MnWw,}
+enum Fence{GdWo,MnWw,MnPrv,GdPrv,}
 
-enum MiscFeature{Shed,Gar2,Othr,TenC,}
+enum MiscFeature{Gar2,TenC,Shed,Othr,}
 
-enum SaleType{ConLI,Con,COD,Oth,New,CWD,ConLw,WD,ConLD,}
+enum SaleType{New,Con,ConLD,COD,ConLI,CWD,WD,Oth,ConLw,}
 
-enum SaleCondition{Partial,AdjLand,Family,Abnorml,Alloca,Normal,}
+enum SaleCondition{Family,Alloca,Partial,Abnorml,AdjLand,Normal,}
 
