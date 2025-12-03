@@ -273,6 +273,8 @@ impl TypeGenerator {
     }
 }
 
+/// I should fix recovered increase
+/// as of now it just increase enum_counter
 struct GenerationInfo {
     enum_counter: u32,
     recovered_invalid_enums: u32,
