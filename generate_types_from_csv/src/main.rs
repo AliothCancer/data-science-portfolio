@@ -1,6 +1,6 @@
 mod categorical_variants;
 
-use std::{error::Error, fs::File, io::Write, path::Path, sync::Arc};
+use std::{error::Error, fs::File, io::Write, ops::Add, path::PathBuf, sync::Arc};
 
 use clap::Parser;
 use file_utility::{self, arg_parsing::Cli};
@@ -9,6 +9,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let Cli {
         data_path,
         feature_desc_path: _feature_desc_path,
+        output_path,
     } = Cli::parse();
     let df = LazyCsvReader::new(PlPath::Local(Arc::from(data_path)))
         .with_null_values(Some(polars::prelude::NullValues::AllColumns(vec![
@@ -23,29 +24,39 @@ fn main() -> Result<(), Box<dyn Error>> {
         ])
         .collect()?;
     // dbg!(df);
-    let buffer = String::from("#![allow(unused)]\n\n")
-        + &df
-            .get_columns()
-            .iter()
-            .map(|col| {
-                let column_unique_values = col.unique().unwrap();
-                let name = col.name().as_str();
-                let col_variants = column_unique_values
-                    .str()
-                    .unwrap()
-                    .into_iter()
-                    .flatten()
-                    .collect::<Vec<&str>>();
 
-                TypeGenerator::generate_type(name, col_variants) + "\n"
-            })
-            .collect::<String>();
+    let generated = df
+        .get_columns()
+        .iter()
+        .map(|col| {
+            let column_unique_values = col.unique().unwrap();
+            let name = col.name().as_str();
+            let col_variants = column_unique_values
+                .str()
+                .unwrap()
+                .into_iter()
+                .flatten()
+                .collect::<Vec<&str>>();
 
-    TypeGenerator::write("categorical_variants.rs", &buffer, false);
+            let (str, info) = TypeGenerator::generate_type(name, col_variants);
+            let str = str + "\n";
+            (str, info)
+        })
+        .fold(
+            ("".to_string(), GenerationInfo::new()),
+            |(final_str, final_info), (str, info)| (final_str + &str, final_info + info),
+        );
+    let buffer = String::from("#![allow(unused)]\n\n") + &generated.0;
+    TypeGenerator::write(
+        output_path.expect("Must give the output_path with -o arg followed by path"),
+        &buffer,
+        true,
+    );
+    generated.1.report();
     Ok(())
 }
 
-const ROOT: &str = "/home/giulio/Scrivania/rust_data_science_env/generate_types_from_csv/src";
+// const ROOT: &str = "/home/giulio/Scrivania/rust_data_science_env/generate_types_from_csv/src";
 
 enum EnumValidationError<'a> {
     Name(&'a str),
@@ -62,11 +73,14 @@ struct EnumDef<'a> {
 struct TypeGenerator;
 impl TypeGenerator {
     /// It first checks if name and variants are valid, if they are, enum is generated.
-    /// Otherwise try to make name and variants valid, return None if either one of them is
-    /// not valid or Some((name,variants)) if the transformation produced a valid enums
-    fn generate_type(name: &str, variants: Vec<&str>) -> String {
+    /// Otherwise try to make name and variants valid, wrapper struct if generated if either one of them is
+    /// not valid or Some((name,variants)) if the transformation produced a valid enum
+    fn generate_type(name: &str, variants: Vec<&str>) -> (String, GenerationInfo) {
         match Self::validate_enum(name, variants.clone()) {
-            Ok(enum_def) => Self::gen_enum(enum_def),
+            Ok(enum_def) => (
+                Self::gen_enum(enum_def),
+                GenerationInfo::new().increase_enum(),
+            ),
             Err(err) => match err {
                 EnumValidationError::Name(name) => {
                     let name = Self::fix_variant_or_name(name);
@@ -97,11 +111,17 @@ impl TypeGenerator {
             },
         }
     }
-    fn gen_enum_otherwise_struct(name: &str, variants: Vec<&str>) -> String {
+    fn gen_enum_otherwise_struct(name: &str, variants: Vec<&str>) -> (String, GenerationInfo) {
         if let Ok(enum_def) = Self::validate_enum(name, variants.clone()) {
-            Self::gen_enum(enum_def)
+            (
+                Self::gen_enum(enum_def),
+                GenerationInfo::new().increase_enum(),
+            )
         } else {
-            Self::gen_wrapper_struct(name, variants)
+            (
+                Self::gen_wrapper_struct(name, variants),
+                GenerationInfo::new().increase_wrapper(),
+            )
         }
     }
     fn validate_enum<'a>(
@@ -218,9 +238,9 @@ impl TypeGenerator {
     /// `file_name`: name of the rust file there no extension validation.\
     /// `buffer`: should contains all the enums and struct to represent data of the csv.\
     /// `dry_run`: if true just print the buffer and do not write anything.
-    fn write(file_name: &str, buffer: &str, dry_run: bool) {
+    fn write(output_path: impl Into<PathBuf>, buffer: &str, dry_run: bool) {
         if !dry_run {
-            let path = Path::new(ROOT).join(file_name);
+            let path: PathBuf = output_path.into();
 
             if path.exists() {
                 println!("File aready exists")
@@ -250,5 +270,52 @@ impl TypeGenerator {
         format!(
             "struct {name}([&'static str;{variants_len}]);\nconst {name_upper}: {name} = {name}([{variants}]);\n",
         )
+    }
+}
+
+struct GenerationInfo {
+    enum_counter: u32,
+    recovered_invalid_enums: u32,
+    wrapper_struct_counter: u32,
+}
+
+impl GenerationInfo {
+    fn new() -> Self {
+        let (enum_counter, recovered_invalid_enums, wrapper_struct_counter) = (0, 0, 0);
+        Self {
+            enum_counter,
+            recovered_invalid_enums,
+            wrapper_struct_counter,
+        }
+    }
+    fn increase_enum(mut self) -> Self {
+        self.enum_counter += 1;
+        self
+    }
+    fn _increase_recovered(mut self) -> Self {
+        self.recovered_invalid_enums += 1;
+        self
+    }
+    fn increase_wrapper(mut self) -> Self {
+        self.wrapper_struct_counter += 1;
+        self
+    }
+    fn report(&self) {
+        println!("--~ Generation Report\n number of enums correctly generated: {}", self.enum_counter);
+        println!(
+            " number of enums recovered: {}",
+            self.recovered_invalid_enums
+        );
+    }
+}
+impl Add for GenerationInfo {
+    type Output = GenerationInfo;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        GenerationInfo {
+            enum_counter: self.enum_counter + rhs.enum_counter,
+            recovered_invalid_enums: self.recovered_invalid_enums + rhs.recovered_invalid_enums,
+            wrapper_struct_counter: self.wrapper_struct_counter + rhs.wrapper_struct_counter,
+        }
     }
 }

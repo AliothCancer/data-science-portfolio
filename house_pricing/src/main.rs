@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let Cli {
         data_path,
         feature_desc_path,
+        output_path,
     } = Cli::parse();
 
 

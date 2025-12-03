@@ -8,7 +8,7 @@ enum Alley{Grvl,Pave,}
 
 enum LotShape{IR2,IR3,IR1,Reg,}
 
-enum LandContour{Bnk,Low,HLS,Lvl,}
+enum LandContour{Bnk,Low,Hls,Lvl,}
 
 enum Utilities{NoSeWa,AllPub,}
 
@@ -16,7 +16,7 @@ enum LotConfig{FR2,Corner,Inside,CulDSac,FR3,}
 
 enum LandSlope{Gtl,Mod,Sev,}
 
-enum Neighborhood{NPkVill,NAmes,SawyerW,Somerst,MeadowV,NWAmes,IDOTRR,Mitchel,Timber,CollgCr,ClearCr,Gilbert,Edwards,Veenker,BrkSide,Blueste,Crawfor,OldTown,NridgHt,SWISU,StoneBr,Blmngtn,BrDale,NoRidge,Sawyer,}
+enum Neighborhood{NPkVill,NAmes,SawyerW,Somerst,MeadowV,NWAmes,Idotrr,Mitchel,Timber,CollgCr,ClearCr,Gilbert,Edwards,Veenker,BrkSide,Blueste,Crawfor,OldTown,NridgHt,Swisu,StoneBr,Blmngtn,BrDale,NoRidge,Sawyer,}
 
 enum Condition1{Feedr,RRAe,RRNn,RRNe,PosA,Norm,RRAn,Artery,PosN,}
 
@@ -48,9 +48,9 @@ enum BsmtCond{Fa,TA,Po,Gd,}
 
 enum BsmtExposure{Mn,No,Av,Gd,}
 
-enum BsmtFinType1{ALQ,GLQ,Rec,BLQ,Unf,LwQ,}
+enum BsmtFinType1{Alq,Glq,Rec,Blq,Unf,LwQ,}
 
-enum BsmtFinType2{ALQ,GLQ,Unf,Rec,LwQ,BLQ,}
+enum BsmtFinType2{Alq,Glq,Unf,Rec,LwQ,Blq,}
 
 enum Heating{GasA,Wall,OthW,Floor,GasW,Grav,}
 
@@ -82,7 +82,7 @@ enum Fence{GdWo,MnWw,MnPrv,GdPrv,}
 
 enum MiscFeature{Gar2,TenC,Shed,Othr,}
 
-enum SaleType{New,Con,ConLD,COD,ConLI,CWD,WD,Oth,ConLw,}
+enum SaleType{New,Con,ConLD,Cod,ConLI,Cwd,WD,Oth,ConLw,}
 
 enum SaleCondition{Family,Alloca,Partial,Abnorml,AdjLand,Normal,}
 
