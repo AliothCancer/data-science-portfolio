@@ -1,4 +1,4 @@
-mod categorical_variants;
+// mod categorical_variants;
 
 use std::{error::Error, fs::File, io::Write, ops::Add, path::PathBuf, sync::Arc};
 
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     TypeGenerator::write(
         output_path.expect("Must give the output_path with -o arg followed by path"),
         &buffer,
-        true,
+        false,
     );
     info.report();
     Ok(())
@@ -76,15 +76,20 @@ enum GenType {
 struct TypeGenerator(Vec<EnumDef>);
 impl TypeGenerator {
     fn generate_string(self) -> String{
-        let prefix = String::from("#![allow(unused)]\n\n");
-        let struct_string = 
-        let enum_strings = self.0.iter().map(|enum_def|{
-            Self::gen_enum(enum_def.clone()) + "\n"
-        }).collect::<String>();
-
-
-
-        prefix + &enum_strings
+        let prefix = String::from("#![allow(unused)]\n\nuse serde::Deserialize;");
+        let mut enums = String::new();
+        let mut deserializer_struct = String::new();
+        deserializer_struct.push_str("#[derive(Debug,Deserialize)]\n");
+        deserializer_struct.push_str("struct SerdeCsvDeserializer{");
+        for endef in self.0{
+            enums.push_str("#[derive(Debug,Deserialize)]\n");
+            enums.push_str(&Self::gen_enum(&endef));
+            enums.push('\n');
+            
+            deserializer_struct.push_str(format!("{} : {},",endef.name.to_lowercase(), endef.name).as_str());
+        }
+        deserializer_struct.push('}');
+        prefix + &enums + &deserializer_struct
     }
     fn add_enum(&mut self, enum_def: EnumDef){
         self.0.push(enum_def);
@@ -249,13 +254,13 @@ impl TypeGenerator {
         }
         !chars.any(|ch| !ch.is_alphanumeric())
     }
-    fn gen_enum(enum_def: EnumDef) -> String {
+    fn gen_enum(enum_def: &EnumDef) -> String {
         let variants = enum_def
             .variants
             .iter()
             .map(|x| format!("{x},"))
             .collect::<String>();
-        let name = enum_def.name;
+        let name = &enum_def.name;
         format!("enum {name}{{{variants}}}\n")
     }
     /// `file_name`: name of the rust file there no extension validation.\

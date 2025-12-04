@@ -6,7 +6,7 @@
 
 [workspace]
 resolver = "2"
-members = [
+members = ["csv_rust",
     "file_utility",
     "generate_types_from_csv",
     "house_pricing",
@@ -54,6 +54,7 @@ csv-schema-validator = "0.2.0"
 itertools = "0.14.0"
 rayon = "1.11.0"
 arrayvec = "0.7.6"
+serde = {version = "1.0.228", features = ["derive"]}
 
 [profile.dev.package."*"]
 opt-level = 3

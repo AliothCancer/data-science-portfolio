@@ -1,0 +1,10 @@
+[package]
+name = "csv_rust"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+file_utility.workspace=true
+clap.workspace =true
+serde.workspace=true
+csv.workspace=true
