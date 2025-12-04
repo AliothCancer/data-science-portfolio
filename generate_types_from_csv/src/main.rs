@@ -25,7 +25,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .collect()?;
     // dbg!(df);
 
-    let generated = df
+    let mut type_gen = TypeGenerator(Vec::new());
+    let info = df
         .get_columns()
         .iter()
         .map(|col| {
@@ -38,21 +39,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .flatten()
                 .collect::<Vec<&str>>();
 
-            let (str, info) = TypeGenerator::generate_type(name, col_variants);
-            let str = str + "\n";
-            (str, info)
+            type_gen.generate_type(name, col_variants)
         })
         .fold(
-            ("".to_string(), GenerationInfo::new()),
-            |(final_str, final_info), (str, info)| (final_str + &str, final_info + info),
+            GenerationInfo::new(),
+            |final_info, info| final_info + info,
         );
-    let buffer = String::from("#![allow(unused)]\n\n") + &generated.0;
+    let buffer = type_gen.generate_string();
     TypeGenerator::write(
         output_path.expect("Must give the output_path with -o arg followed by path"),
         &buffer,
         true,
     );
-    generated.1.report();
+    info.report();
     Ok(())
 }
 
@@ -64,36 +63,52 @@ enum EnumValidationError<'a> {
         variants: Vec<&'a str>,
     },
 }
-struct EnumDef<'a> {
-    name: &'a str,
-    variants: Vec<&'a str>,
+
+struct EnumDef {
+    name: String,
+    variants: Vec<String>,
 }
 enum GenType {
     TypeEnum,
     TypeStruct,
 }
-struct SerdeDesStruct<'a>(Vec<EnumDef<'a>>);
-struct TypeGenerator;
+
+struct TypeGenerator(Vec<EnumDef>);
 impl TypeGenerator {
+    fn generate_string(self) -> String{
+        let prefix = String::from("#![allow(unused)]\n\n");
+        let struct_string = 
+        let enum_strings = self.0.iter().map(|enum_def|{
+            Self::gen_enum(enum_def.clone()) + "\n"
+        }).collect::<String>();
+
+
+
+        prefix + &enum_strings
+    }
+    fn add_enum(&mut self, enum_def: EnumDef){
+        self.0.push(enum_def);
+    }
     /// It first checks if name and variants are valid, if they are, enum is generated.
     /// Otherwise try to make name and variants valid, wrapper struct if generated if either one of them is
     /// not valid or Some((name,variants)) if the transformation produced a valid enum
-    fn generate_type(name: &str, variants: Vec<&str>) -> (String, GenerationInfo) {
-        let match_gen_type = |(str, gen_type): (String, GenType)| match gen_type {
-            GenType::TypeEnum => (str, GenerationInfo::new().increase_recovered().append_name(name)),
-            GenType::TypeStruct => (str, GenerationInfo::new().increase_wrapper()),
+    fn generate_type(&mut self, name: &str, variants: Vec<&str>) -> GenerationInfo {
+        let match_gen_type = |gen_type: GenType| match gen_type {
+            GenType::TypeEnum => GenerationInfo::new().increase_recovered().append_name(name),
+            GenType::TypeStruct => GenerationInfo::new().increase_wrapper(),
         };
 
         match Self::validate_enum(name, variants.clone()) {
-            Ok(enum_def) => (
-                Self::gen_enum(enum_def),
-                GenerationInfo::new().increase_enum(),
-            ),
+            Ok(enum_def) => {
+                self.0.push(enum_def);
+
+                GenerationInfo::new().increase_enum()
+            }
             Err(err) => match err {
                 EnumValidationError::Name(name) => {
                     let name = Self::fix_variant_or_name(name);
 
-                    match_gen_type(Self::gen_enum_otherwise_struct(&name, variants))
+                    match_gen_type(self.gen_enum_otherwise_struct(&name, variants))
                 }
                 EnumValidationError::Variant(variants) => {
                     let variants = variants
@@ -101,7 +116,7 @@ impl TypeGenerator {
                         .map(Self::fix_variant_or_name)
                         .collect::<Vec<String>>();
 
-                    match_gen_type(Self::gen_enum_otherwise_struct(
+                    match_gen_type(self.gen_enum_otherwise_struct(
                         name,
                         variants.iter().map(|x| x.as_str()).collect(),
                     ))
@@ -113,7 +128,7 @@ impl TypeGenerator {
                         .map(Self::fix_variant_or_name)
                         .collect::<Vec<_>>();
 
-                    match_gen_type(Self::gen_enum_otherwise_struct(
+                    match_gen_type(self.gen_enum_otherwise_struct(
                         &name,
                         variants.iter().map(|x| x.as_str()).collect(),
                     ))
@@ -121,20 +136,18 @@ impl TypeGenerator {
             },
         }
     }
-    fn gen_enum_otherwise_struct(name: &str, variants: Vec<&str>) -> (String, GenType) {
+    fn gen_enum_otherwise_struct(&mut self, name: &str, variants: Vec<&str>) -> GenType {
         if let Ok(enum_def) = Self::validate_enum(name, variants.clone()) {
-            (Self::gen_enum(enum_def), GenType::TypeEnum)
+            self.add_enum(enum_def);
+            GenType::TypeEnum
         } else {
-            (
-                Self::gen_wrapper_struct(name, variants),
-                GenType::TypeStruct,
-            )
+            GenType::TypeStruct
         }
     }
     fn validate_enum<'a>(
         name: &'a str,
         variants: Vec<&'a str>,
-    ) -> Result<EnumDef<'a>, EnumValidationError<'a>> {
+    ) -> Result<EnumDef, EnumValidationError<'a>> {
         let name_is_valid = Self::is_valid_enum_variant_name(name);
         let mut invalid_variants: Vec<&'a str> = vec![];
 
@@ -146,7 +159,10 @@ impl TypeGenerator {
 
         let invalid_variants_is_empty = invalid_variants.is_empty();
         if invalid_variants_is_empty && name_is_valid {
-            Ok(EnumDef { name, variants })
+            Ok(EnumDef {
+                name: name.to_string(),
+                variants: variants.iter().map(|x| x.to_string()).collect(),
+            })
         } else if invalid_variants_is_empty && !name_is_valid {
             Err(EnumValidationError::Name(name))
         } else if !invalid_variants_is_empty && name_is_valid {
@@ -282,7 +298,7 @@ impl TypeGenerator {
 
 /// I should fix recovered increase
 /// as of now it just increase enum_counter
-struct GenerationInfo{
+struct GenerationInfo {
     enum_counter: u32,
     recovered_invalid_enums: u32,
     recovered_names: Vec<String>,
@@ -291,7 +307,8 @@ struct GenerationInfo{
 
 impl GenerationInfo {
     fn new() -> Self {
-        let (enum_counter, recovered_invalid_enums, recovered_names, wrapper_struct_counter) = (0, 0,Vec::new(), 0);
+        let (enum_counter, recovered_invalid_enums, recovered_names, wrapper_struct_counter) =
+            (0, 0, Vec::new(), 0);
         Self {
             enum_counter,
             recovered_invalid_enums,
@@ -311,7 +328,7 @@ impl GenerationInfo {
         self.wrapper_struct_counter += 1;
         self
     }
-    fn append_name(mut self, name:impl Into<String>) -> Self{
+    fn append_name(mut self, name: impl Into<String>) -> Self {
         self.recovered_names.push(name.into());
         self
     }
@@ -324,17 +341,18 @@ impl GenerationInfo {
             " number of enums recovered: {}",
             self.recovered_invalid_enums
         );
-        println!(
-            " recovered columns: {:?}",
-            self.recovered_names
-        );
+        println!(" recovered columns: {:?}", self.recovered_names);
     }
 }
 impl Add for GenerationInfo {
     type Output = GenerationInfo;
 
     fn add(self, rhs: Self) -> Self::Output {
-        let recovered_names:Vec<String> = self.recovered_names.into_iter().chain(rhs.recovered_names).collect();
+        let recovered_names: Vec<String> = self
+            .recovered_names
+            .into_iter()
+            .chain(rhs.recovered_names)
+            .collect();
         GenerationInfo {
             enum_counter: self.enum_counter + rhs.enum_counter,
             recovered_invalid_enums: self.recovered_invalid_enums + rhs.recovered_invalid_enums,
