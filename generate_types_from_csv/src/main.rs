@@ -5,6 +5,16 @@ use std::{error::Error, fs::File, io::Write, ops::Add, path::PathBuf, sync::Arc}
 use clap::Parser;
 use file_utility::{self, arg_parsing::Cli};
 use polars::prelude::*;
+
+
+
+/*  TODO!!! data: 4 december 2025
+Devo salvare la stringa grezza oltre a quella aggiustata, quella grezza serve a serde
+per matchare la stringa grezza all'enum rust, che io ho fatto in modo essere uguale
+a quella aggiustata
+*/
+
+
 fn main() -> Result<(), Box<dyn Error>> {
     let Cli {
         data_path,
@@ -38,7 +48,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .into_iter()
                 .flatten()
                 .collect::<Vec<&str>>();
-
             type_gen.generate_type(name, col_variants)
         })
         .fold(
@@ -65,8 +74,10 @@ enum EnumValidationError<'a> {
 }
 
 struct EnumDef {
+    raw_name: String,
     name: String,
     variants: Vec<String>,
+    raw_variants: Vec<String>,
 }
 enum GenType {
     TypeEnum,
@@ -80,13 +91,13 @@ impl TypeGenerator {
         let mut enums = String::new();
         let mut deserializer_struct = String::new();
         deserializer_struct.push_str("#[derive(Debug,Deserialize)]\n");
-        deserializer_struct.push_str("struct SerdeCsvDeserializer{");
+        deserializer_struct.push_str("pub struct SerdeCsvDeserializer{");
         for endef in self.0{
             enums.push_str("#[derive(Debug,Deserialize)]\n");
             enums.push_str(&Self::gen_enum(&endef));
             enums.push('\n');
             
-            deserializer_struct.push_str(format!("{} : {},",endef.name.to_lowercase(), endef.name).as_str());
+            deserializer_struct.push_str(format!("pub {} : Option<{}>,",endef.name.as_str(), endef.name).as_str());
         }
         deserializer_struct.push('}');
         prefix + &enums + &deserializer_struct
@@ -102,7 +113,7 @@ impl TypeGenerator {
             GenType::TypeEnum => GenerationInfo::new().increase_recovered().append_name(name),
             GenType::TypeStruct => GenerationInfo::new().increase_wrapper(),
         };
-
+        let confeziona_tuple_for_gen_enum_otherwise_struct = |(raw, fixed)| (*raw,fixed.as_str());
         match Self::validate_enum(name, variants.clone()) {
             Ok(enum_def) => {
                 self.0.push(enum_def);
@@ -111,38 +122,38 @@ impl TypeGenerator {
             }
             Err(err) => match err {
                 EnumValidationError::Name(name) => {
-                    let name = Self::fix_variant_or_name(name);
+                    let (raw_name, fixed_name) = Self::fix_variant_or_name(name);
 
-                    match_gen_type(self.gen_enum_otherwise_struct(&name, variants))
+                    match_gen_type(self.gen_enum_otherwise_struct(&fixed_name, variants))
                 }
                 EnumValidationError::Variant(variants) => {
-                    let variants = variants
-                        .into_iter()
-                        .map(Self::fix_variant_or_name)
-                        .collect::<Vec<String>>();
-
-                    match_gen_type(self.gen_enum_otherwise_struct(
-                        name,
-                        variants.iter().map(|x| x.as_str()).collect(),
-                    ))
-                }
-                EnumValidationError::NameAndVariants { name, variants } => {
-                    let name = Self::fix_variant_or_name(name);
                     let variants = variants
                         .into_iter()
                         .map(Self::fix_variant_or_name)
                         .collect::<Vec<_>>();
 
                     match_gen_type(self.gen_enum_otherwise_struct(
-                        &name,
-                        variants.iter().map(|x| x.as_str()).collect(),
+                        name,
+                        variants.iter().map(confeziona_tuple_for_gen_enum_otherwise_struct).collect(),
+                    ))
+                }
+                EnumValidationError::NameAndVariants { name, variants } => {
+                    let (raw_name, fixed_name) = Self::fix_variant_or_name(name);
+                    let variants = variants
+                        .into_iter()
+                        .map(Self::fix_variant_or_name)
+                        .collect::<Vec<_>>();
+
+                    match_gen_type(self.gen_enum_otherwise_struct(
+                        &fixed_name,
+                        variants.into_iter().map(confeziona_tuple_for_gen_enum_otherwise_struct).collect(),
                     ))
                 }
             },
         }
     }
-    fn gen_enum_otherwise_struct(&mut self, name: &str, variants: Vec<&str>) -> GenType {
-        if let Ok(enum_def) = Self::validate_enum(name, variants.clone()) {
+    fn gen_enum_otherwise_struct(&mut self,raw_name: &str, fixed_name: &str, variants: Vec<(&str,&str)>) -> GenType {
+        if let Ok(enum_def) = Self::validate_enum(fixed_name, variants.clone()) {
             self.add_enum(enum_def);
             GenType::TypeEnum
         } else {
@@ -180,8 +191,8 @@ impl TypeGenerator {
         }
     }
     /// Accept either a name or a variant of the enum to fix
-    pub fn fix_variant_or_name(variant: &str) -> String {
-        variant
+    pub fn fix_variant_or_name(variant: &str) -> (&str, String) {
+        (variant, variant
             .trim()
             .chars()
             .map(|ch| match ch {
@@ -242,7 +253,7 @@ impl TypeGenerator {
                 // Default: Keep alphanumeric characters as they are
                 c => c.to_string(),
             })
-            .collect() // Joins the parts into a single String
+            .collect()) // Joins the parts into a single String
     }
     /// Can be used to validate either name or a variant of an enum
     fn is_valid_enum_variant_name(variant: &str) -> bool {
@@ -261,7 +272,7 @@ impl TypeGenerator {
             .map(|x| format!("{x},"))
             .collect::<String>();
         let name = &enum_def.name;
-        format!("enum {name}{{{variants}}}\n")
+        format!("pub enum {name}{{{variants}}}\n")
     }
     /// `file_name`: name of the rust file there no extension validation.\
     /// `buffer`: should contains all the enums and struct to represent data of the csv.\
